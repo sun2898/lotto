@@ -25,17 +25,15 @@
             margin: 0;
             text-decoration: none;
         }
-        
-        body {
-            padding-top: 20px;
-        }
+
 
         #container {
             text-align: center;
         }
 
-        #header, #footer {
-            height: 50px;
+        #header,
+        #footer {
+            height: 30px;
             background-color: rgb(237, 187, 100);
             margin-bottom: 20px;
         }
@@ -43,6 +41,7 @@
         #title,
         #showBtn {
             font-family: 'Black Han Sans', sans-serif;
+            margin-bottom: 20px;
         }
 
         li {
@@ -54,6 +53,9 @@
             margin-left: 10px;
         }
 
+        #result {
+            min-height: 200px;
+        }
     </style>
 
 
@@ -64,20 +66,24 @@
         <div id="header">
 
         </div>
+        
         <h2 id="title">로또 번호 뽑기</h2>
         <!-- <img src="/img/Lotto.png" alt="lotto" width="200"> -->
-
+        <div id="lineCount">
+            <span>뽑을 세트 수 : &nbsp;</span>
+            <select onchange="handleChange()" value="1">
+                <option name="A" value="1" selected>1</option>
+                <option name="B" value="2">2</option>
+                <option name="C" value="3">3</option>
+                <option name="D" value="4">4</option>
+                <option name="E" value="5">5</option>
+            </select>
+        </div>
+        <br />
         <button type="button" id="showBtn" class="btn btn-outline-warning">뽑기</button>
         <br />
-        <br />
-        <ul id="result">
-            <li></li>
-            <li></li>
-            <li></li>
-            <li></li>
-            <li></li>
-            <li></li>
-        </ul>
+        <div id="result"></div>
+
         <div id="footer">
 
         </div>
@@ -88,49 +94,81 @@
 <script>
     let showBtn = document.getElementById('showBtn');
     let result = document.getElementById('result');
+    let select = document.querySelector("select");
 
-    
-    
+    function handleChange() {
+        value = event.target.value;
+    }
+
+    function drawSet() {    
+
+        for (var l = 1; l <= select.value; l++) {
+            let lotto = new Set();
+            let lotto2;
+
+            while (lotto.size < 6) {
+                lotto.add(Math.floor(Math.random() * 44) + 1);
+            }
+
+            lotto2 = Array.from(lotto);
+            lotto2 = lotto2.sort(compare);
+
+            function compare(a, b) {
+                return a - b;
+            }
+
+            let ul = document.createElement("ul");
+            
+            for (let i = 0; i < 6; i++) {
+                let li = document.createElement("li");
+                let text = document.createTextNode(lotto2[i])
+
+                li.appendChild(text);
+                ul.append(li);
+                ul.classList.add("line");
+            }
+            result.appendChild(ul);
+        }
+
+        let line = document.querySelectorAll("ul");
+        line.forEach(line => {
+            for (var i = 0; i < 6; i++) {
+                //line.children[i].innerHTML = lotto2[i];
+                let number = line.children[i];
+                let numberText = number.innerHTML;
+                console.log(number);
+
+                if (numberText < 10) {
+                    number.style.backgroundColor = "green";
+                } else if (numberText < 20 && numberText >= 10) {
+                    number.style.backgroundColor = "orange";
+                } else if (numberText < 30 && numberText >= 20) {
+                    number.style.backgroundColor = "blue";
+                } else if (numberText < 40 && numberText >= 30) {
+                    number.style.backgroundColor = "red";
+                } else {
+                    number.style.backgroundColor = "gray";
+                }
+
+            }
+        })
+
+
+
+
+
+    }
+
     showBtn.onclick = function () {
 
         showBtn.innerHTML = "다시하기";
+        result.innerHTML = "";
 
-        let lotto = new Set();
+        drawSet();
 
-        while (lotto.size < 6) {
-            lotto.add(Math.floor(Math.random() * 44) + 1);
-        }
-
-        let lotto2 = Array.from(lotto);
-        lotto2 = lotto2.sort(compare);
-
-        function compare(a, b) {
-            return a - b;
-        }
-
-        for(var i = 0; i < lotto2.length; i++) {
-            
-            if(lotto2[i] < 10) {
-                result.children[i].style.backgroundColor = "green";
-            } else if(lotto2[i] < 20 && lotto2[i] >= 10) {
-                result.children[i].style.backgroundColor = "orange";
-            } else if(lotto2[i] < 30 && lotto2[i] >= 20) {
-                result.children[i].style.backgroundColor = "blue";
-            } else if(lotto2[i] < 40 && lotto2[i] >= 30) {
-                result.children[i].style.backgroundColor = "red";
-            } else {
-                result.children[i].style.backgroundColor = "gray";
-            }
-
-            result.children[i].innerHTML = lotto2[i];
-        }
-
-
-
-        //console.log(lotto2.sort(compare));
-
-        //result.innerHTML = '<span>' + lotto2[0] + '</span> <span>' + lotto2[1] + '</span> <span>' + lotto2[2] + '</span> <span>' + lotto2[3] + '</span> <span>' + lotto2[4] + '</span> <span>' + lotto2[5] + '</span>';
     }
+
+
 </script>
 
 </html>
